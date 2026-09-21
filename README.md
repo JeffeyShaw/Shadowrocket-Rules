@@ -12,7 +12,7 @@
 | 🤖 AI 服务 | 🇺🇸 美国节点 | 节点选择、PROXY、DIRECT |
 | 🍎 苹果推送 | 🚀 节点选择 | PROXY、DIRECT |
 | 🍏 苹果服务 | DIRECT | 节点选择、PROXY |
-| 🏦 汇丰香港 | 🇭🇰 香港节点 | DIRECT、节点选择、PROXY |
+| 🏦 汇丰香港 | DIRECT | 🇭🇰 香港节点、节点选择、PROXY |
 | 🏦 香港银行 | DIRECT | 香港节点、节点选择、PROXY |
 | 📈 券商服务 | 🇭🇰 香港节点 | DIRECT、节点选择、PROXY |
 | 🌍 非中国 | PROXY | 节点选择、DIRECT、日本节点 |
@@ -45,7 +45,7 @@
 | 8 | 📲 电报消息 | 节点选择 |
 | 9 | 🐱 代码托管（GitHub、GitLab、Atlassian） | 节点选择 |
 | 10 | Ⓜ️ 微软服务 | 节点选择 |
-| 11 | 🏦 汇丰香港（含 Reward+） | 香港节点 |
+| 11 | 🏦 汇丰香港（含 Reward+） | DIRECT |
 | 12 | 🏦 其他香港银行 | DIRECT |
 | 13 | 📈 券商服务（富途 / moomoo / 长桥 / 老虎 / 雪盈 / 盈透） | 香港节点 |
 | 14 | 🍎 苹果推送 | 节点选择 |
@@ -71,7 +71,7 @@
    - 代理 DNS 不回退系统 DNS，避免代理域名查询从本地网络泄露
    - 直连域名使用系统 DNS，改善国内服务和 CDN 调度
    - 扩展常见硬编码 DNS 劫持范围
-   - 新增 blackmatrix7 `BlockHttpDNS`，拦截 App 内置 HTTPDNS
+   - 新增 blackmatrix7 `BlockHttpDNS`，拦截 App 内置 HTTPDNS；微信 HTTPDNS 例外直连，保留国内 CDN 调度
 - 新增 `Mail.list`
    - 精确收录常见 IMAP、POP3 与 SMTP 服务端点
    - 默认使用 PROXY，可手动切换 DIRECT 或地区节点
@@ -84,7 +84,7 @@
    - 补充雪盈证券 / Snowball X 官方及 OpenAPI 域名
    - 补充盈透证券 / Interactive Brokers 官方域名
 - 新增香港银行分流
-   - 汇丰香港及 Reward+ 默认使用香港节点
+   - 汇丰香港及 Reward+ 默认直连，避免代理出口触发风控或导致 App 反复重试
    - 其他香港银行默认直连，减少代理 IP 变化带来的风控风险
    - 美国运通因不同地区共用主域名，不纳入自动分流
 - Google AI 相关规则已并入 `Google.list`
@@ -101,7 +101,7 @@
 
 - DNS：代理域名使用经代理转发的 Cloudflare / Google DoH，直连域名使用系统 DNS
 - DNS 劫持：拦截常见硬编码 53 端口 DNS，防止应用绕过规则
-- HTTPDNS 拦截：引用 blackmatrix7 `BlockHttpDNS`，阻止 App 通过内置 HTTPDNS 绕过系统解析
+- HTTPDNS 拦截：引用 blackmatrix7 `BlockHttpDNS`，阻止 App 通过内置 HTTPDNS 绕过系统解析；微信 HTTPDNS 前置直连，避免影响朋友圈和公众号图片的 CDN 调度
 - 邮件分流：常见邮件协议端点默认使用 PROXY，可按网络情况切换直连或地区节点
 - QUIC 屏蔽：对代理连接屏蔽 UDP/443，强制回退 HTTP/2
 - 本地服务保护：`localhost.weixin.qq.com` 固定解析到 `127.0.0.1` 并强制直连，避免 fake-IP 影响微信本地回调
@@ -122,7 +122,7 @@
 ## 注意事项
 
 - 地区分组通过节点名称关键词自动匹配，请确保你的节点名称包含地区标识（如 🇭🇰、HK、香港等）
-- 银行服务对出口 IP 稳定性较敏感；使用香港代理时，建议尽量保持同一节点
+- 银行服务对出口 IP 和 VPN 环境较敏感，默认直连；如手动切换香港代理，建议尽量保持同一节点
 - Google、AI、非中国和漏网之鱼的默认出口可在 App 内手动切换
 - 如需 HTTPS 解密功能，请在 Shadowrocket 中生成并安装 CA 证书
 
